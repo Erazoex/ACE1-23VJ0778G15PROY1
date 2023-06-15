@@ -3,6 +3,16 @@
 LiquidCrystal lcd(2, 3, 4, 5, 6, 7);
 
 char mensaje[] = "Diego - Brian - Hugo 202004807 - Victor - Henry";
+const int PIN_BUTTON = 2;  // Pin de seleccion
+int menuIndex = 0; //estado del menu
+const int cambio = 10; //boton para cambiar en el menu inicio
+bool primero= true;
+
+/*char teclas={ {'1','2','3'}, \
+              {'4','5','6'}, \
+              {'7','8','9'}, \
+              {'*','0','#'} };*/
+
 
 byte userCounter = 0;
 struct User {
@@ -41,16 +51,69 @@ void MensajeInicio() {
   }
 }
 
-void setup() {
+void Menu(){//-------------------------------------------- Menu-----------------------------------
+  if(primero){
+    lcd.print("  Menu Principal");
+    lcd.setCursor(0, 2);
+    lcd.print(">> Inicio de sesion");
+    lcd.setCursor(0, 3);
+    lcd.print("   Registro");
+    primero=false;
+  }
+  
+
+  if (digitalRead(cambio) == LOW) {
+    delay(100);
+    menuIndex = (menuIndex + 1) % 2; // Cambiar de opción de menú
+
+    lcd.clear();
+    lcd.setCursor(0, 0);
+    lcd.print("  Menu Principal");
+ 
+  if (menuIndex == 0){
+    lcd.clear();
+    lcd.setCursor(0, 0);
+    lcd.print("  Menu Principal");
+    lcd.setCursor(0, 2);
+    lcd.print(">> Inicio de sesion");
+    lcd.setCursor(0, 3);
+    lcd.print("   Registro");
+  } else { 
+    lcd.clear();
+    lcd.setCursor(0, 0);
+    lcd.print("  Menu Principal");
+    lcd.setCursor(0, 2);
+    lcd.print("   Inicio de sesion");
+    lcd.setCursor(0, 3);
+    lcd.print(">> Registro");
+  }
+}
+}
+
+void setup() {//--------------------------------------------- setup -------------------------------------
   Serial.begin(9600);
   lcd.begin(16,4);
   // Imprime el mensaje inicialmente en la primera fila
   lcd.setCursor(0, 0);
   lcd.print(mensaje);
 
+  pinMode(cambio, INPUT_PULLUP);
+
+  for (int j=25; j<=28; j++){
+    pinMode(j, INPUT);
+  }
+  for (int j=22; j<=24; j++){
+    pinMode(j, OUTPUT);
+  }
+
 }
 
-void loop() {
-  MensajeInicio();
+void loop() {//----------------------------------------------- loop --------------------------------------
+  if(primero){//para que solo se muestre al inicio del programa unicamente
+    MensajeInicio();
+    lcd.clear();
+  }
+  
+  Menu();
 
 }
