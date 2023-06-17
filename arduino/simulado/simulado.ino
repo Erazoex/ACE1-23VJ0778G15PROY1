@@ -2,7 +2,7 @@
 
 LiquidCrystal lcd(2, 3, 4, 5, 6, 7);
 
-char mensaje[] = "Diego - Brian - Hugo 202004807 - Victor - Henry";
+char mensaje[] = "Diego 201908327 - Brian - Hugo 202004807 - Victor - Henry";
 const int PIN_BUTTON = 2;  // Pin de seleccion
 int menuIndex = 0; //estado del menu
 const int cambio = 10; //boton para cambiar en el menu inicio
