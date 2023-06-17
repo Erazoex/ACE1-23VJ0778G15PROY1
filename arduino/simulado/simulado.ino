@@ -1,18 +1,32 @@
 #include <LiquidCrystal.h>
+#include <EEPROM.h>
+#include <Keypad.h>
+
+#define ACEPTAR 8
+#define CANCELAR 9
+#define BORRAR 10
+#define LOOP while(true)
 
 LiquidCrystal lcd(2, 3, 4, 5, 6, 7);
 
-char mensaje[] = "Diego - Brian - Hugo 202004807 - Victor - Henry";
+char mensaje[] = "Diego - Brian 201807253 - Hugo 202004807 - Victor - Henry";
 const int PIN_BUTTON = 2;  // Pin de seleccion
 int menuIndex = 0; //estado del menu
 const int cambio = 10; //boton para cambiar en el menu inicio
 bool primero= true;
 
-/*char teclas={ {'1','2','3'}, \
-              {'4','5','6'}, \
-              {'7','8','9'}, \
-              {'*','0','#'} };*/
+// string para 
 
+char teclas[4][3] = { 
+  {'1','2','3'}, 
+  {'4','5','6'}, 
+  {'7','8','9'}, 
+  {'*','0','#'}
+};
+
+byte rowPins[4] = { 53, 52, 51, 50 };
+byte colPins[4] = { 22, 23, 24 };
+Keypad pad = Keypad(makeKeymap(keys), rowPins, colPins, 4, 3);
 
 byte userCounter = 0;
 struct User {
@@ -90,6 +104,50 @@ void Menu(){//-------------------------------------------- Menu-----------------
 }
 }
 
+void registro() {
+  String nombreUsuario = escribirEnPantalla(" Registro", "Nombre: ");
+  if (getName(nombreUsuario) && nombreUsuario != "") { registro(); }
+  String passwordUsuario = escribirEnPantalla(" Registro", "Nombre: ");
+  if (passwordUsuario == "") { registro(); }
+  
+}
+
+char getTeclado() {
+  char key = pad.getKey();
+  if (key != NO_KEY) {
+    Serial.print(key);
+    return key;
+  }
+  return ' ';
+}
+
+String escribirEnPantalla(String textoPrincipal, String textoSecundario) {
+  String palabra = "";
+  LOOP {
+    char tecla = pad.getKey();
+    if (tecla != NO_KEY) {
+      palabra += tecla;
+    }
+    delay(200);
+    if (digitalRead(ACEPTAR)) {
+      return palabra;
+    } else if (digitalRead(BORRAR)) {
+      palabra = palabra.substring(0, palabra.length() - 1);
+    } else if (digitalRead(CANCELAR)) {
+      break;
+    } else {
+      lcd.clear();
+      lcd.setCursor(0, 0);
+      lcd.print(textoPrincipal);
+      lcd.setCursor(0, 1);
+      lcd.print(textoSecundario);
+      lcd.setCursor(0, 2);
+      lcd.print(palabra);
+    }
+  }
+  return "";
+}
+
 void setup() {//--------------------------------------------- setup -------------------------------------
   Serial.begin(9600);
   lcd.begin(16,4);
@@ -116,4 +174,34 @@ void loop() {//----------------------------------------------- loop ------------
   
   Menu();
 
+}
+
+bool getName(String name) {
+  int value = EEPROM.read(0);
+  User temp;
+  for (int i = 0; i < value; i++) {
+    EEPROM.get(sizeof(int)+ sizeof(User)*i, temp);
+    if (temp.name == name) {
+      return true;
+    }
+  }
+  return false;
+}
+
+User* getUser(String name) {
+  int value = EEPROM.read(0);
+  User temp;
+  for (int i = 0; i < value; i++) {
+    EEPROM.get(sizeof(int)+ sizeof(User)*i, temp);
+    if (temp.name == name) {
+      return &temp;
+    }
+  }
+  return nullptr;
+}
+
+void setUser(User newUser) {
+  int value = EEPROM.read(0);
+  value++
+  EEPROM.put(sizeof(int)+ value*sizeof(User), newUser);
 }
