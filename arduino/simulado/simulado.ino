@@ -26,7 +26,7 @@ char teclas[4][3] = {
 
 byte rowPins[4] = { 53, 52, 51, 50 };
 byte colPins[4] = { 22, 23, 24 };
-Keypad pad = Keypad(makeKeymap(keys), rowPins, colPins, 4, 3);
+Keypad pad = Keypad(makeKeymap(teclas), rowPins, colPins, 4, 3);
 
 byte userCounter = 0;
 struct User {
@@ -109,7 +109,7 @@ void registro() {
   if (getName(nombreUsuario) && nombreUsuario != "") { registro(); }
   String passwordUsuario = escribirEnPantalla(" Registro", "Nombre: ");
   if (passwordUsuario == "") { registro(); }
-  
+
 }
 
 char getTeclado() {
@@ -122,6 +122,7 @@ char getTeclado() {
 }
 
 String escribirEnPantalla(String textoPrincipal, String textoSecundario) {
+  lcd.clear();
   String palabra = "";
   LOOP {
     char tecla = pad.getKey();
@@ -202,6 +203,6 @@ User* getUser(String name) {
 
 void setUser(User newUser) {
   int value = EEPROM.read(0);
-  value++
+  value++;
   EEPROM.put(sizeof(int)+ value*sizeof(User), newUser);
 }
