@@ -9,11 +9,7 @@
 
 LiquidCrystal lcd(2, 3, 4, 5, 6, 7);
 
-<<<<<<< HEAD
 char mensaje[] = "Diego 201908327 - Brian - Hugo 202004807 - Victor - Henry";
-=======
-char mensaje[] = "Diego - Brian 201807253 - Hugo 202004807 - Victor - Henry";
->>>>>>> 607f22082a9a9bc7a998353850a88b335977bbf1
 const int PIN_BUTTON = 2;  // Pin de seleccion
 int menuIndex = 0; //estado del menu
 const int cambio = 10; //boton para cambiar en el menu inicio
@@ -211,3 +207,32 @@ void setUser(User newUser) {
   value++;
   EEPROM.put(sizeof(int)+ value*sizeof(User), newUser);
 }
+
+String cifrarXOR(String mensaje, String clave) {
+  if (mensaje.length() != clave.length()) {
+    Serial.println("Error: La longitud del mensaje y la clave no coinciden.");
+    return;
+  }
+  
+  // Cifrado XOR byte a byte
+  String mensajeCifrado = "";
+  for (int i = 0; i < mensaje.length(); i++) {
+    char caracterCifrado = mensaje[i] ^ clave[i];
+    mensajeCifrado += caracterCifrado;
+  }
+  
+  return mensajeCifrado;
+}
+
+void descifrarXOR(String mensajeCifrado, String clave) {
+  // Descifrado XOR byte a byte
+  String mensajeDescifrado = "";
+  for (int i = 0; i < mensajeCifrado.length(); i++) {
+    char caracterDescifrado = mensajeCifrado[i] ^ clave[i];
+    mensajeDescifrado += caracterDescifrado;
+  }
+  
+  // Imprimir el mensaje descifrado
+  Serial.println("Mensaje descifrado: " + mensajeDescifrado);
+}
+
