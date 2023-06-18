@@ -298,7 +298,6 @@ String descifrarXOR(String mensajeCifrado, String clave) {
   return mensajeDescifrado;
 }
 
-<<<<<<< HEAD
 void MostrarDigito(String numDecenas) {
 
   if (numDecenas == "0") {
@@ -352,5 +351,3 @@ void MostrarDigito(String numDecenas) {
   }
 
 }//contador con dos digitos_________________________________
-=======
->>>>>>> 811ab62ece803d17fdc34dbbfe64e87c846ed231
