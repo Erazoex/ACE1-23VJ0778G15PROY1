@@ -14,7 +14,6 @@ const int PIN_BUTTON = 2;  // Pin de seleccion
 int menuIndex = 0; //estado del menu
 const int cambio = 10; //boton para cambiar en el menu inicio
 bool primero= true;
-String palabra = "";
 
 // string para 
 
@@ -124,6 +123,7 @@ char getTeclado() {
 }
 
 String escribirEnPantalla(String textoPrincipal, String textoSecundario) {
+  String palabra = "";
   LOOP {
     char tecla = teclado.getKey();
     if (tecla != NO_KEY) {
@@ -173,8 +173,8 @@ void loop() {//----------------------------------------------- loop ------------
     lcd.clear();
   }
   
-  // Menu();
-  registro();
+  Menu();
+  // registro();
 
 }
 
