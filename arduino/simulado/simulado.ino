@@ -1,4 +1,5 @@
 #include <LiquidCrystal.h>
+#include <LedControl.h>
 #include "contador.h"
 #include <EEPROM.h>
 #include <Keypad.h>
@@ -6,6 +7,9 @@
 #define ACEPTAR 8
 #define CANCELAR 9
 #define BORRAR 10
+#define CLOCK 49
+#define LOAD 48
+#define DIN 47
 #define LOOP while(true)
 
 LiquidCrystal lcd(2, 3, 4, 5, 6, 7);
@@ -17,7 +21,8 @@ int menuIndex = 0; //estado del menu
 const int cambio = 10; //boton para cambiar en el menu inicio
 bool primero= true;
 
-// string para 
+// int para opciones en menus
+int opcion = 0;
 
 char teclas[4][3] = { 
   {'1','2','3'}, 
@@ -107,13 +112,6 @@ void Menu(){//-------------------------------------------- Menu-----------------
 }
 
 void registro() {
-<<<<<<< HEAD
-  String nombreUsuario = escribirEnPantalla(" Registro", "Nombre: ");
-  if (getName(nombreUsuario) && nombreUsuario != "") { registro(); }
-  String passwordUsuario = escribirEnPantalla(" Registro", "Nombre: ");
-  if (passwordUsuario == "") { registro(); }
-
-=======
   String nombreUsuario = escribirEnPantalla("Menu registro", "Nombre:");
   if (nombreUsuario != "" && getName(nombreUsuario)) { registro(); }
   String passwordUsuario = escribirEnPantalla("Menu registro", "Password:");
@@ -125,6 +123,7 @@ void registro() {
   newUser.password = cifrarXOR(passwordUsuario, passwordUsuario);
   newUser.phoneNumber = numeroUsuario;
   setUser(newUser);
+  lcd.clear();
   imprimirEnPantalla("Registro", 0, 0);
   imprimirEnPantalla("Exitoso!", 0, 1);
   Menu();
@@ -143,17 +142,103 @@ void inicioSesion() {
 
 void MenuUsuario() {
   // TODO: implementar menu usuario
+  // por medio de la aplicacion Bluetooth.
+  lcd.clear();
+  LOOP {
+    delay(1);
+    if (digitalRead(CANCELAR)) {
+      opcion = 0;
+      Menu();
+    }
+    char tecla = getTeclado();
+    if (tecla == '2') {
+      if (opcion < 1) {
+        opcion = 3;
+      } else {
+        opcion--;
+      }
+      lcd.clear();
+    } else if (tecla == '8') {
+      if (opcion > 2) {
+        opcion = 0;
+      } else {
+        opcion++;
+      }
+      lcd.clear();
+    }
+    if (opcion == 0) {
+      imprimirEnPantalla(">> ingreso cel", 0, 0);
+      imprimirEnPantalla("   retiro cel", 0, 1);
+      imprimirEnPantalla("   cerrar sesion", 0, 2);
+      imprimirEnPantalla("   eliminar acc", 0, 3);
+    } else if (opcion == 1) {
+      imprimirEnPantalla("   ingreso cel", 0, 0);
+      imprimirEnPantalla(">> retiro cel", 0, 1);
+      imprimirEnPantalla("   cerrar sesion", 0, 2);
+      imprimirEnPantalla("   eliminar acc", 0, 3);
+    }  else if (opcion == 2) {
+      imprimirEnPantalla("   ingreso cel", 0, 0);
+      imprimirEnPantalla("   retiro cel", 0, 1);
+      imprimirEnPantalla(">> cerrar sesion", 0, 2);
+      imprimirEnPantalla("   eliminar acc", 0, 3);
+    }  else if (opcion == 3) {
+      imprimirEnPantalla("   ingreso cel", 0, 0);
+      imprimirEnPantalla("   retiro cel", 0, 1);
+      imprimirEnPantalla("   cerrar sesion", 0, 2);
+      imprimirEnPantalla(">> eliminar acc", 0, 3);
+    }
+    Serial.println(opcion);
+  }
 }
 
 void MenuAdmin() {
   // TODO: implementar menu admin
->>>>>>> 811ab62ece803d17fdc34dbbfe64e87c846ed231
+  // por medio de la aplicacion Bluetooth.
+  lcd.clear();
+  LOOP {
+    delay(1);
+    if (digitalRead(CANCELAR)) {
+      opcion = 0;
+      Menu();
+    }
+    char tecla = getTeclado();
+    if (tecla == '2') {
+      if (opcion < 1) {
+        opcion = 1;
+      } else {
+        opcion--;
+      }
+      lcd.clear();
+    } else if (tecla == '8') {
+      if (opcion > 0) {
+        opcion = 0;
+      } else {
+        opcion++;
+      }
+      lcd.clear();
+    }
+    if (opcion == 0) {
+      imprimirEnPantalla(">> ver logs", 0, 0);
+      imprimirEnPantalla("   estado sist.", 0, 1);
+    } else if (opcion == 1) {
+      imprimirEnPantalla("   ver logs", 0, 0);
+      imprimirEnPantalla(">> estado sist.", 0, 1);
+    }
+    Serial.println(opcion);
+  }
+}
+
+void pintarEnPantalla(String array[]) {
+  lcd.clear();
+  for (int i = 0; i < array->length(); i++) {
+    imprimirEnPantalla(array[i], 0, i);
+  }
 }
 
 char getTeclado() {
   char key = pad.getKey();
   if (key != NO_KEY) {
-    Serial.print(key);
+    Serial.println(key);
     return key;
   }
   return ' ';
@@ -167,9 +252,6 @@ String escribirEnPantalla(String textoPrincipal, String textoSecundario) {
     if (tecla != NO_KEY) {
       palabra += tecla;
     }
-
-    
-
     delay(200);
     if (digitalRead(ACEPTAR)) {
       return palabra;
@@ -188,6 +270,11 @@ String escribirEnPantalla(String textoPrincipal, String textoSecundario) {
     }
   }
   return "";
+}
+
+void imprimirEnPantalla(String texto, int x, int y) {
+  lcd.setCursor(x, y);
+  lcd.print(texto);
 }
 
 void setup() {//--------------------------------------------- setup -------------------------------------
@@ -299,59 +386,3 @@ String descifrarXOR(String mensajeCifrado, String clave) {
   return mensajeDescifrado;
 }
 
-<<<<<<< HEAD
-void MostrarDigito(String numDecenas) {
-
-  if (numDecenas == "0") {
-    for (int k = 0; k < 8; k++) {
-      matriz_driver.setRow(0, k, cero[k]);
-    }
-  } else if (numDecenas == "1") {
-    for (int k = 0; k < 8; k++) {
-      matriz_driver.setRow(0, k, uno[k]);
-    }
-  } else if (numDecenas == "2") {
-    for (int k = 0; k < 8; k++) {
-      matriz_driver.setRow(0, k, dos[k]);
-    }
-  } else if (numDecenas == "3") {
-    for (int k = 0; k < 8; k++) {
-      matriz_driver.setRow(0, k, tres[k]);
-    }
-  } else if (numDecenas == "4") {
-    for (int k = 0; k < 8; k++) {
-      matriz_driver.setRow(0, k, cuatro[k]);
-    }
-  } else if (numDecenas == "5") {
-    for (int k = 0; k < 8; k++) {
-      matriz_driver.setRow(0, k, cinco[k]);
-    }
-  } else if (numDecenas == "6") {
-    for (int k = 0; k < 8; k++) {
-      matriz_driver.setRow(0, k, seis[k]);
-    }
-  } else if (numDecenas == "7") {
-    for (int k = 0; k < 8; k++) {
-      matriz_driver.setRow(0, k, siete[k]);
-    }
-  } else if (numDecenas == "8") {
-    for (int k = 0; k < 8; k++) {
-      matriz_driver.setRow(0, k, ocho[k]);
-    }
-  } else if (numDecenas == "9") {
-    for (int k = 0; k < 8; k++) {
-      matriz_driver.setRow(0, k, nueve[k]);
-    }
-  } else if (numDecenas == "*") {
-    for (int k = 0; k < 8; k++) {
-      matriz_driver.setRow(0, k, Astk[k]);
-    }
-  }else if (numDecenas == "#") {
-    for (int k = 0; k < 8; k++) {
-      matriz_driver.setRow(0, k, Numeral[k]);
-    }
-  }
-
-}//contador con dos digitos_________________________________
-=======
->>>>>>> 811ab62ece803d17fdc34dbbfe64e87c846ed231
