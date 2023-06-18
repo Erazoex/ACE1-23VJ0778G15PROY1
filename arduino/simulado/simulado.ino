@@ -224,7 +224,7 @@ String cifrarXOR(String mensaje, String clave) {
   return mensajeCifrado;
 }
 
-void descifrarXOR(String mensajeCifrado, String clave) {
+String descifrarXOR(String mensajeCifrado, String clave) {
   // Descifrado XOR byte a byte
   String mensajeDescifrado = "";
   for (int i = 0; i < mensajeCifrado.length(); i++) {
@@ -232,7 +232,6 @@ void descifrarXOR(String mensajeCifrado, String clave) {
     mensajeDescifrado += caracterDescifrado;
   }
   
-  // Imprimir el mensaje descifrado
-  Serial.println("Mensaje descifrado: " + mensajeDescifrado);
+  return mensajeDescifrado;
 }
 
