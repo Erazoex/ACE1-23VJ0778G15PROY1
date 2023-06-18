@@ -1,48 +1,33 @@
 #include <LiquidCrystal.h>
-#include <LedControl.h>
+#include "contador.h"
 #include <EEPROM.h>
 #include <Keypad.h>
 
-#define CLOCK 49
-#define LOAD 48
-#define DIN 47
 #define ACEPTAR 8
 #define CANCELAR 9
 #define BORRAR 10
-#define LOOP while(1)
+#define LOOP while(true)
 
 LiquidCrystal lcd(2, 3, 4, 5, 6, 7);
-LedControl matriz_driver = LedControl(DIN, CLOCK, LOAD, 1);
 
 char mensaje[] = "Diego 201908327 - Brian 201807253 - Hugo 202004807 - Victor - Henry";
 const int PIN_BUTTON = 2;  // Pin de seleccion
-int menuIndex = 0; //estado del menud
+int menuIndex = 0; //estado del menu
 const int cambio = 10; //boton para cambiar en el menu inicio
 bool primero= true;
 
-// tablero de la matriz de leds
-int tablero_matriz[8][8] = {
-  { 0, 0, 0, 0, 0, 0, 0, 0},
-  { 0, 0, 0, 0, 0, 0, 0, 0},
-  { 0, 0, 0, 0, 0, 0, 0, 0},
-  { 0, 0, 0, 0, 0, 0, 0, 0},
-  { 0, 0, 0, 0, 0, 0, 0, 0},
-  { 0, 0, 0, 0, 0, 0, 0, 0},
-  { 0, 0, 0, 0, 0, 0, 0, 0},
-  { 0, 0, 0, 0, 0, 0, 0, 0}
-};
-
+// string para 
 
 char teclas[4][3] = { 
-  {'1', '2', '3'}, 
-  {'4', '5', '6'}, 
-  {'7', '8', '9'}, 
-  {'*', '0', '#'}
+  {'1','2','3'}, 
+  {'4','5','6'}, 
+  {'7','8','9'}, 
+  {'*','0','#'}
 };
 
 byte rowPins[4] = { 53, 52, 51, 50 };
 byte colPins[4] = { 22, 23, 24 };
-Keypad teclado = Keypad(makeKeymap(teclas), rowPins, colPins, 4, 3);
+Keypad pad = Keypad(makeKeymap(teclas), rowPins, colPins, 4, 3);
 
 byte userCounter = 0;
 struct User {
@@ -121,16 +106,15 @@ void Menu(){//-------------------------------------------- Menu-----------------
 }
 
 void registro() {
-  String nombreUsuario = escribirEnPantalla("Menu registro", "Nombre: ");
+  String nombreUsuario = escribirEnPantalla(" Registro", "Nombre: ");
   if (getName(nombreUsuario) && nombreUsuario != "") { registro(); }
-  String passwordUsuario = escribirEnPantalla("Menu registro", "Nombre: ");
+  String passwordUsuario = escribirEnPantalla(" Registro", "Nombre: ");
   if (passwordUsuario == "") { registro(); }
-  imprimirEnPantalla("Registro", 0, 0);
-  imprimirEnPantalla("Exitoso!", 0, 1);
+
 }
 
 char getTeclado() {
-  char key = teclado.getKey();
+  char key = pad.getKey();
   if (key != NO_KEY) {
     Serial.print(key);
     return key;
@@ -139,36 +123,34 @@ char getTeclado() {
 }
 
 String escribirEnPantalla(String textoPrincipal, String textoSecundario) {
+  lcd.clear();
   String palabra = "";
   LOOP {
-    char tecla = teclado.getKey();
+    char tecla = pad.getKey();
     if (tecla != NO_KEY) {
       palabra += tecla;
     }
+
+    
+
     delay(200);
-    Serial.println(palabra);
     if (digitalRead(ACEPTAR)) {
       return palabra;
     } else if (digitalRead(BORRAR)) {
       palabra = palabra.substring(0, palabra.length() - 1);
     } else if (digitalRead(CANCELAR)) {
       break;
+    } else {
+      lcd.clear();
+      lcd.setCursor(0, 0);
+      lcd.print(textoPrincipal);
+      lcd.setCursor(0, 1);
+      lcd.print(textoSecundario);
+      lcd.setCursor(0, 2);
+      lcd.print(palabra);
     }
-    lcd.clear();
-    lcd.setCursor(0, 0);
-    lcd.print(textoPrincipal);
-    lcd.setCursor(0, 1);
-    lcd.print(textoSecundario);
-    lcd.setCursor(0, 2);
-    lcd.print(palabra);
   }
-}
-
-void imprimirEnPantalla(String texto, int x, int y) {
-  lcd.clear();
-  lcd.setCursor(x, y);
-  lcd.print(texto);
-  delay(400);
+  return "";
 }
 
 void setup() {//--------------------------------------------- setup -------------------------------------
@@ -196,7 +178,6 @@ void loop() {//----------------------------------------------- loop ------------
   }
   
   Menu();
-  // registro();
 
 }
 
@@ -229,7 +210,6 @@ void setUser(User newUser) {
   value++;
   EEPROM.put(sizeof(int)+ value*sizeof(User), newUser);
 }
-<<<<<<< HEAD
 
 String cifrarXOR(String mensaje, String clave) {
   if (mensaje.length() != clave.length()) {
@@ -258,5 +238,56 @@ String descifrarXOR(String mensajeCifrado, String clave) {
   return mensajeDescifrado;
 }
 
-=======
->>>>>>> 9a349169f8997486a9cc9f85b0fdbd3bdd224677
+void MostrarDigito(String numDecenas) {
+
+  if (numDecenas == "0") {
+    for (int k = 0; k < 8; k++) {
+      matriz_driver.setRow(0, k, cero[k]);
+    }
+  } else if (numDecenas == "1") {
+    for (int k = 0; k < 8; k++) {
+      matriz_driver.setRow(0, k, uno[k]);
+    }
+  } else if (numDecenas == "2") {
+    for (int k = 0; k < 8; k++) {
+      matriz_driver.setRow(0, k, dos[k]);
+    }
+  } else if (numDecenas == "3") {
+    for (int k = 0; k < 8; k++) {
+      matriz_driver.setRow(0, k, tres[k]);
+    }
+  } else if (numDecenas == "4") {
+    for (int k = 0; k < 8; k++) {
+      matriz_driver.setRow(0, k, cuatro[k]);
+    }
+  } else if (numDecenas == "5") {
+    for (int k = 0; k < 8; k++) {
+      matriz_driver.setRow(0, k, cinco[k]);
+    }
+  } else if (numDecenas == "6") {
+    for (int k = 0; k < 8; k++) {
+      matriz_driver.setRow(0, k, seis[k]);
+    }
+  } else if (numDecenas == "7") {
+    for (int k = 0; k < 8; k++) {
+      matriz_driver.setRow(0, k, siete[k]);
+    }
+  } else if (numDecenas == "8") {
+    for (int k = 0; k < 8; k++) {
+      matriz_driver.setRow(0, k, ocho[k]);
+    }
+  } else if (numDecenas == "9") {
+    for (int k = 0; k < 8; k++) {
+      matriz_driver.setRow(0, k, nueve[k]);
+    }
+  } else if (numDecenas == "*") {
+    for (int k = 0; k < 8; k++) {
+      matriz_driver.setRow(0, k, Astk[k]);
+    }
+  }else if (numDecenas == "#") {
+    for (int k = 0; k < 8; k++) {
+      matriz_driver.setRow(0, k, Numeral[k]);
+    }
+  }
+
+}//contador con dos digitos_________________________________
