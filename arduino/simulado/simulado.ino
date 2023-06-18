@@ -364,38 +364,6 @@ String escribirEnPantalla(String textoPrincipal, String textoSecundario) {
   return "";
 }
 
-void imprimirEnPantalla(String texto, int x, int y) {
-  lcd.setCursor(x, y);
-  lcd.print(texto);
-}
-
-void setup() {//--------------------------------------------- setup -------------------------------------
-  Serial.begin(9600);
-  lcd.begin(16,4);
-  // Imprime el mensaje inicialmente en la primera fila
-  lcd.setCursor(0, 0);
-  lcd.print(mensaje);
-
-  pinMode(cambio, INPUT_PULLUP);
-
-  for (int j=25; j<=28; j++){
-    pinMode(j, INPUT);
-  }
-  for (int j=22; j<=24; j++){
-    pinMode(j, OUTPUT);
-  }
-
-}
-
-void loop() {//----------------------------------------------- loop --------------------------------------
-  if(primero){//para que solo se muestre al inicio del programa unicamente
-    MensajeInicio();
-    lcd.clear();
-  }
-  
-  Menu();
-
-}
 
 bool getName(String name) {
   int value = EEPROM.read(0);
