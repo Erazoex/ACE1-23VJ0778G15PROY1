@@ -14,9 +14,9 @@
 LiquidCrystal lcd(2, 3, 4, 5, 6, 7);
 LedControl matriz_driver = LedControl(DIN, CLOCK, LOAD, 1);
 
-char mensaje[] = "Diego 201908327 - Brian - Hugo 202004807 - Victor - Henry";
+char mensaje[] = "Diego 201908327 - Brian 201807253 - Hugo 202004807 - Victor - Henry";
 const int PIN_BUTTON = 2;  // Pin de seleccion
-int menuIndex = 0; //estado del menu
+int menuIndex = 0; //estado del menud
 const int cambio = 10; //boton para cambiar en el menu inicio
 bool primero= true;
 
@@ -30,7 +30,7 @@ int tablero_matriz[8][8] = {
   { 0, 0, 0, 0, 0, 0, 0, 0},
   { 0, 0, 0, 0, 0, 0, 0, 0},
   { 0, 0, 0, 0, 0, 0, 0, 0}
-}
+};
 
 
 char teclas[4][3] = { 
@@ -125,7 +125,8 @@ void registro() {
   if (getName(nombreUsuario) && nombreUsuario != "") { registro(); }
   String passwordUsuario = escribirEnPantalla("Menu registro", "Nombre: ");
   if (passwordUsuario == "") { registro(); }
-
+  imprimirEnPantalla("Registro", 0, 0);
+  imprimirEnPantalla("Exitoso!", 0, 1);
 }
 
 char getTeclado() {
@@ -161,6 +162,13 @@ String escribirEnPantalla(String textoPrincipal, String textoSecundario) {
     lcd.setCursor(0, 2);
     lcd.print(palabra);
   }
+}
+
+void imprimirEnPantalla(String texto, int x, int y) {
+  lcd.clear();
+  lcd.setCursor(x, y);
+  lcd.print(texto);
+  delay(400);
 }
 
 void setup() {//--------------------------------------------- setup -------------------------------------
