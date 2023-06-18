@@ -1,13 +1,18 @@
 #include <LiquidCrystal.h>
+#include <LedControl.h>
 #include <EEPROM.h>
 #include <Keypad.h>
 
+#define CLOCK 49
+#define LOAD 48
+#define DIN 47
 #define ACEPTAR 8
 #define CANCELAR 9
 #define BORRAR 10
 #define LOOP while(1)
 
 LiquidCrystal lcd(2, 3, 4, 5, 6, 7);
+LedControl matriz_driver = LedControl(DIN, CLOCK, LOAD, 1);
 
 char mensaje[] = "Diego - Brian 201807253 - Hugo 202004807 - Victor - Henry";
 const int PIN_BUTTON = 2;  // Pin de seleccion
@@ -15,7 +20,18 @@ int menuIndex = 0; //estado del menu
 const int cambio = 10; //boton para cambiar en el menu inicio
 bool primero= true;
 
-// string para 
+// tablero de la matriz de leds
+int tablero_matriz[8][8] = {
+  { 0, 0, 0, 0, 0, 0, 0, 0},
+  { 0, 0, 0, 0, 0, 0, 0, 0},
+  { 0, 0, 0, 0, 0, 0, 0, 0},
+  { 0, 0, 0, 0, 0, 0, 0, 0},
+  { 0, 0, 0, 0, 0, 0, 0, 0},
+  { 0, 0, 0, 0, 0, 0, 0, 0},
+  { 0, 0, 0, 0, 0, 0, 0, 0},
+  { 0, 0, 0, 0, 0, 0, 0, 0}
+}
+
 
 char teclas[4][3] = { 
   {'1', '2', '3'}, 
@@ -105,7 +121,6 @@ void Menu(){//-------------------------------------------- Menu-----------------
 }
 
 void registro() {
-  Serial.println("enta aqui");
   String nombreUsuario = escribirEnPantalla("Menu registro", "Nombre: ");
   if (getName(nombreUsuario) && nombreUsuario != "") { registro(); }
   String passwordUsuario = escribirEnPantalla("Menu registro", "Nombre: ");
@@ -127,11 +142,10 @@ String escribirEnPantalla(String textoPrincipal, String textoSecundario) {
   LOOP {
     char tecla = teclado.getKey();
     if (tecla != NO_KEY) {
-      Serial.println(tecla);
       palabra += tecla;
-      Serial.println(palabra);
     }
     delay(200);
+    Serial.println(palabra);
     if (digitalRead(ACEPTAR)) {
       return palabra;
     } else if (digitalRead(BORRAR)) {
@@ -145,7 +159,7 @@ String escribirEnPantalla(String textoPrincipal, String textoSecundario) {
     lcd.setCursor(0, 1);
     lcd.print(textoSecundario);
     lcd.setCursor(0, 2);
-    lcd.print("palabra");
+    lcd.print(palabra);
   }
 }
 
@@ -207,3 +221,5 @@ void setUser(User newUser) {
   value++;
   EEPROM.put(sizeof(int)+ value*sizeof(User), newUser);
 }
+
+
