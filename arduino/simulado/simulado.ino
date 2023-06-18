@@ -13,16 +13,28 @@
 #define LOOP while(true)
 
 LiquidCrystal lcd(2, 3, 4, 5, 6, 7);
-LedControl matriz_driver = LedControl(DIN, CLOCK, LOAD, 1);
 
 char mensaje[] = "Diego 201908327 - Brian 201807253 - Hugo 202004807 - Victor - Henry";
 const int PIN_BUTTON = 2;  // Pin de seleccion
 int menuIndex = 0; //estado del menu
 const int cambio = 10; //boton para cambiar en el menu inicio
 bool primero= true;
+bool opcionesMostradas = false;
+int opcionAdministrador = -1;
 
+<<<<<<< HEAD
 // int para opciones en menus
 int opcion = 0;
+=======
+const int numeroDispositivos = 1; // Número de controladores MAX7219 conectados
+const int pinDIN = 11; // Pin de datos (MOSI)
+const int pinCLK = 13; // Pin de reloj (SCK)
+const int pinCS = 10; // Pin de selección del dispositivo (SS)
+
+
+LedControl matriz_driver = LedControl(pinDIN, pinCLK, pinCS, numeroDispositivos);
+// string para 
+>>>>>>> c0b0a1408ccb0205e1d67283223a34a961603e88
 
 char teclas[4][3] = { 
   {'1','2','3'}, 
@@ -48,18 +60,49 @@ struct Log {
     char Description[15];
 };
 
+
+void setup() {//--------------------------------------------- setup -------------------------------------
+  Serial.begin(9600);
+  lcd.begin(16,4);
+  // Imprime el mensaje inicialmente en la primera fila
+  lcd.setCursor(0, 0);
+  lcd.print(mensaje);
+
+  matriz_driver.shutdown(0, false); // Activar el controlador MAX7219
+  matriz_driver.setIntensity(0, 7); // Ajustar la intensidad de brillo (0-15)
+  matriz_driver.clearDisplay(0); // Limpiar la matriz de LEDs
+
+  pinMode(cambio, INPUT_PULLUP);
+
+  for (int j=25; j<=28; j++){
+    pinMode(j, INPUT);
+  }
+  for (int j=22; j<=24; j++){
+    pinMode(j, OUTPUT);
+  }
+
+}
+
+void loop() {//----------------------------------------------- loop --------------------------------------
+  
+  if(primero){//para que solo se muestre al inicio del programa unicamente
+    MensajeInicio();
+    lcd.clear();
+    primero = false;
+  }
+  Menu();
+}
+
 void MensajeInicio() {
   int longitudMensaje = strlen(mensaje);
   
   for (int desplazamiento = 0; desplazamiento <= longitudMensaje + 16; desplazamiento++) {
     lcd.clear();
-    
     // Calcula la posición de inicio del mensaje en función del desplazamiento
     int posicionInicio = max(0, desplazamiento - 16);
     
     // Calcula la posición de fin del mensaje
     int posicionFin = min(longitudMensaje, desplazamiento);
-    
     // Imprime el mensaje desplazado
     lcd.setCursor(0, 0);
     lcd.print(mensaje + posicionInicio);
@@ -67,12 +110,50 @@ void MensajeInicio() {
       lcd.setCursor(posicionFin - 16, 1);
       lcd.print(mensaje + posicionInicio + 16);
     }
-    
     delay(20);  // Pausa de 20 milisegundos
   }
 }
 
 void Menu(){//-------------------------------------------- Menu-----------------------------------
+
+  char teclado = getTeclado();
+  MostrarDigito((teclado));
+
+  if (!opcionesMostradas) {
+    lcd.clear();
+    lcd.setCursor(0,0);
+    lcd.print("Menu Principal");
+    lcd.setCursor(0,1);
+    lcd.print(">>Inicio sesion");
+    opcionesMostradas = true;
+  } else {
+    if (teclado == '8') {
+      lcd.clear();
+      opcionAdministrador = 0;
+      lcd.setCursor(0,0);
+      lcd.print("Menu Principal");
+      lcd.setCursor(0,1);
+      lcd.print(">>Inicio sesion");
+      
+    } else if (teclado == '2'){
+      lcd.clear();
+      opcionAdministrador = 1;
+      lcd.setCursor(0,0);
+      lcd.print(">>Menu Principal");
+      lcd.setCursor(0,1);
+      lcd.print("Inicio sesion");
+    }
+
+    if (teclado == '*') {
+      if (opcionAdministrador == 0) {
+        //configuracionProducto();
+      } else if (opcionAdministrador == 1) {
+        MenuUsuario();
+      }
+    }
+  }
+
+  /*
   if(primero){
     lcd.print("  Menu Principal");
     lcd.setCursor(0, 2);
@@ -82,7 +163,6 @@ void Menu(){//-------------------------------------------- Menu-----------------
     primero=false;
   }
   
-
   if (digitalRead(cambio) == LOW) {
     delay(100);
     menuIndex = (menuIndex + 1) % 2; // Cambiar de opción de menú
@@ -90,7 +170,7 @@ void Menu(){//-------------------------------------------- Menu-----------------
     lcd.clear();
     lcd.setCursor(0, 0);
     lcd.print("  Menu Principal");
- 
+    Serial.println("Base");
   if (menuIndex == 0){
     lcd.clear();
     lcd.setCursor(0, 0);
@@ -98,7 +178,9 @@ void Menu(){//-------------------------------------------- Menu-----------------
     lcd.setCursor(0, 2);
     lcd.print(">> Inicio de sesion");
     lcd.setCursor(0, 3);
-    lcd.print("   Registro");
+    lcd.println("   Registro");
+
+    Serial.print("Uno");
   } else { 
     lcd.clear();
     lcd.setCursor(0, 0);
@@ -107,8 +189,10 @@ void Menu(){//-------------------------------------------- Menu-----------------
     lcd.print("   Inicio de sesion");
     lcd.setCursor(0, 3);
     lcd.print(">> Registro");
+    Serial.println("Dos");
+   }
   }
-}
+  */
 }
 
 void registro() {
@@ -193,6 +277,7 @@ void MenuUsuario() {
 
 void MenuAdmin() {
   // TODO: implementar menu admin
+<<<<<<< HEAD
   // por medio de la aplicacion Bluetooth.
   lcd.clear();
   LOOP {
@@ -233,12 +318,24 @@ void pintarEnPantalla(String array[]) {
   for (int i = 0; i < array->length(); i++) {
     imprimirEnPantalla(array[i], 0, i);
   }
+=======
+}
+
+void imprimirEnPantalla(String texto, int x, int y) {
+  lcd.clear();
+  lcd.setCursor(x, y);
+  lcd.print(texto);
+  delay(400);
+>>>>>>> c0b0a1408ccb0205e1d67283223a34a961603e88
 }
 
 char getTeclado() {
   char key = pad.getKey();
   if (key != NO_KEY) {
+<<<<<<< HEAD
     Serial.println(key);
+=======
+>>>>>>> c0b0a1408ccb0205e1d67283223a34a961603e88
     return key;
   }
   return ' ';
@@ -252,6 +349,13 @@ String escribirEnPantalla(String textoPrincipal, String textoSecundario) {
     if (tecla != NO_KEY) {
       palabra += tecla;
     }
+<<<<<<< HEAD
+=======
+
+    Serial.print(tecla);
+
+    MostrarDigito((tecla));
+>>>>>>> c0b0a1408ccb0205e1d67283223a34a961603e88
     delay(200);
     if (digitalRead(ACEPTAR)) {
       return palabra;
@@ -272,6 +376,7 @@ String escribirEnPantalla(String textoPrincipal, String textoSecundario) {
   return "";
 }
 
+<<<<<<< HEAD
 void imprimirEnPantalla(String texto, int x, int y) {
   lcd.setCursor(x, y);
   lcd.print(texto);
@@ -305,6 +410,8 @@ void loop() {//----------------------------------------------- loop ------------
 
 }
 
+=======
+>>>>>>> c0b0a1408ccb0205e1d67283223a34a961603e88
 bool getName(String name) {
   int value = EEPROM.read(0);
   User temp;
@@ -386,3 +493,63 @@ String descifrarXOR(String mensajeCifrado, String clave) {
   return mensajeDescifrado;
 }
 
+<<<<<<< HEAD
+=======
+void MostrarDigito(char numDecenas) {
+
+
+  if (numDecenas == '0') {
+    for (int k = 0; k < 8; k++) {
+      matriz_driver.setRow(0, k, cero[k]);
+    }
+  } else if (numDecenas == '1') {
+    Serial.println("Entro");
+    for (int k = 0; k < 8; k++) {
+      matriz_driver.setRow(0, k, uno[k]);
+    }
+  } else if (numDecenas == '2') {
+    for (int k = 0; k < 8; k++) {
+      matriz_driver.setRow(0, k, dos[k]);
+    }
+  } else if (numDecenas == '3') {
+    for (int k = 0; k < 8; k++) {
+      matriz_driver.setRow(0, k, tres[k]);
+    }
+  } else if (numDecenas == '4') {
+    for (int k = 0; k < 8; k++) {
+      matriz_driver.setRow(0, k, cuatro[k]);
+    }
+  } else if (numDecenas == '5') {
+    for (int k = 0; k < 8; k++) {
+      matriz_driver.setRow(0, k, cinco[k]);
+    }
+  } else if (numDecenas == '6') {
+    for (int k = 0; k < 8; k++) {
+      matriz_driver.setRow(0, k, seis[k]);
+    }
+  } else if (numDecenas == '7') {
+    for (int k = 0; k < 8; k++) {
+      matriz_driver.setRow(0, k, siete[k]);
+    }
+  } else if (numDecenas == '8') {
+    for (int k = 0; k < 8; k++) {
+      matriz_driver.setRow(0, k, ocho[k]);
+    }
+  } else if (numDecenas == '9') {
+    for (int k = 0; k < 8; k++) {
+      matriz_driver.setRow(0, k, nueve[k]);
+    }
+  } else if (numDecenas == '*') {
+    for (int k = 0; k < 8; k++) {
+      matriz_driver.setRow(0, k, Astk[k]);
+    }
+  }else if (numDecenas == '#') {
+    for (int k = 0; k < 8; k++) {
+      matriz_driver.setRow(0, k, Numeral[k]);
+    }
+  }
+  delay(50);
+
+}//contador con dos digitos_________________________________
+
+>>>>>>> c0b0a1408ccb0205e1d67283223a34a961603e88
