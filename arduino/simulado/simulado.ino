@@ -22,10 +22,8 @@ bool primero= true;
 bool opcionesMostradas = false;
 int opcionAdministrador = -1;
 
-<<<<<<< HEAD
 // int para opciones en menus
 int opcion = 0;
-=======
 const int numeroDispositivos = 1; // Número de controladores MAX7219 conectados
 const int pinDIN = 11; // Pin de datos (MOSI)
 const int pinCLK = 13; // Pin de reloj (SCK)
@@ -34,7 +32,6 @@ const int pinCS = 10; // Pin de selección del dispositivo (SS)
 
 LedControl matriz_driver = LedControl(pinDIN, pinCLK, pinCS, numeroDispositivos);
 // string para 
->>>>>>> c0b0a1408ccb0205e1d67283223a34a961603e88
 
 char teclas[4][3] = { 
   {'1','2','3'}, 
@@ -277,7 +274,6 @@ void MenuUsuario() {
 
 void MenuAdmin() {
   // TODO: implementar menu admin
-<<<<<<< HEAD
   // por medio de la aplicacion Bluetooth.
   lcd.clear();
   LOOP {
@@ -318,7 +314,6 @@ void pintarEnPantalla(String array[]) {
   for (int i = 0; i < array->length(); i++) {
     imprimirEnPantalla(array[i], 0, i);
   }
-=======
 }
 
 void imprimirEnPantalla(String texto, int x, int y) {
@@ -326,16 +321,12 @@ void imprimirEnPantalla(String texto, int x, int y) {
   lcd.setCursor(x, y);
   lcd.print(texto);
   delay(400);
->>>>>>> c0b0a1408ccb0205e1d67283223a34a961603e88
 }
 
 char getTeclado() {
   char key = pad.getKey();
   if (key != NO_KEY) {
-<<<<<<< HEAD
     Serial.println(key);
-=======
->>>>>>> c0b0a1408ccb0205e1d67283223a34a961603e88
     return key;
   }
   return ' ';
@@ -349,13 +340,10 @@ String escribirEnPantalla(String textoPrincipal, String textoSecundario) {
     if (tecla != NO_KEY) {
       palabra += tecla;
     }
-<<<<<<< HEAD
-=======
 
     Serial.print(tecla);
 
     MostrarDigito((tecla));
->>>>>>> c0b0a1408ccb0205e1d67283223a34a961603e88
     delay(200);
     if (digitalRead(ACEPTAR)) {
       return palabra;
@@ -376,7 +364,6 @@ String escribirEnPantalla(String textoPrincipal, String textoSecundario) {
   return "";
 }
 
-<<<<<<< HEAD
 void imprimirEnPantalla(String texto, int x, int y) {
   lcd.setCursor(x, y);
   lcd.print(texto);
@@ -410,8 +397,6 @@ void loop() {//----------------------------------------------- loop ------------
 
 }
 
-=======
->>>>>>> c0b0a1408ccb0205e1d67283223a34a961603e88
 bool getName(String name) {
   int value = EEPROM.read(0);
   User temp;
@@ -493,8 +478,6 @@ String descifrarXOR(String mensajeCifrado, String clave) {
   return mensajeDescifrado;
 }
 
-<<<<<<< HEAD
-=======
 void MostrarDigito(char numDecenas) {
 
 
@@ -552,4 +535,3 @@ void MostrarDigito(char numDecenas) {
 
 }//contador con dos digitos_________________________________
 
->>>>>>> c0b0a1408ccb0205e1d67283223a34a961603e88
