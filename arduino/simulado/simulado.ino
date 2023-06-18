@@ -5,7 +5,7 @@
 #define ACEPTAR 8
 #define CANCELAR 9
 #define BORRAR 10
-#define LOOP while(true)
+#define LOOP while(1)
 
 LiquidCrystal lcd(2, 3, 4, 5, 6, 7);
 
@@ -14,19 +14,20 @@ const int PIN_BUTTON = 2;  // Pin de seleccion
 int menuIndex = 0; //estado del menu
 const int cambio = 10; //boton para cambiar en el menu inicio
 bool primero= true;
+String palabra = "";
 
 // string para 
 
 char teclas[4][3] = { 
-  {'1','2','3'}, 
-  {'4','5','6'}, 
-  {'7','8','9'}, 
-  {'*','0','#'}
+  {'1', '2', '3'}, 
+  {'4', '5', '6'}, 
+  {'7', '8', '9'}, 
+  {'*', '0', '#'}
 };
 
 byte rowPins[4] = { 53, 52, 51, 50 };
 byte colPins[4] = { 22, 23, 24 };
-Keypad pad = Keypad(makeKeymap(teclas), rowPins, colPins, 4, 3);
+Keypad teclado = Keypad(makeKeymap(teclas), rowPins, colPins, 4, 3);
 
 byte userCounter = 0;
 struct User {
@@ -105,15 +106,16 @@ void Menu(){//-------------------------------------------- Menu-----------------
 }
 
 void registro() {
-  String nombreUsuario = escribirEnPantalla(" Registro", "Nombre: ");
+  Serial.println("enta aqui");
+  String nombreUsuario = escribirEnPantalla("Menu registro", "Nombre: ");
   if (getName(nombreUsuario) && nombreUsuario != "") { registro(); }
-  String passwordUsuario = escribirEnPantalla(" Registro", "Nombre: ");
+  String passwordUsuario = escribirEnPantalla("Menu registro", "Nombre: ");
   if (passwordUsuario == "") { registro(); }
 
 }
 
 char getTeclado() {
-  char key = pad.getKey();
+  char key = teclado.getKey();
   if (key != NO_KEY) {
     Serial.print(key);
     return key;
@@ -122,12 +124,12 @@ char getTeclado() {
 }
 
 String escribirEnPantalla(String textoPrincipal, String textoSecundario) {
-  lcd.clear();
-  String palabra = "";
   LOOP {
-    char tecla = pad.getKey();
+    char tecla = teclado.getKey();
     if (tecla != NO_KEY) {
+      Serial.println(tecla);
       palabra += tecla;
+      Serial.println(palabra);
     }
     delay(200);
     if (digitalRead(ACEPTAR)) {
@@ -136,17 +138,15 @@ String escribirEnPantalla(String textoPrincipal, String textoSecundario) {
       palabra = palabra.substring(0, palabra.length() - 1);
     } else if (digitalRead(CANCELAR)) {
       break;
-    } else {
-      lcd.clear();
-      lcd.setCursor(0, 0);
-      lcd.print(textoPrincipal);
-      lcd.setCursor(0, 1);
-      lcd.print(textoSecundario);
-      lcd.setCursor(0, 2);
-      lcd.print(palabra);
     }
+    lcd.clear();
+    lcd.setCursor(0, 0);
+    lcd.print(textoPrincipal);
+    lcd.setCursor(0, 1);
+    lcd.print(textoSecundario);
+    lcd.setCursor(0, 2);
+    lcd.print("palabra");
   }
-  return "";
 }
 
 void setup() {//--------------------------------------------- setup -------------------------------------
@@ -173,7 +173,8 @@ void loop() {//----------------------------------------------- loop ------------
     lcd.clear();
   }
   
-  Menu();
+  // Menu();
+  registro();
 
 }
 
