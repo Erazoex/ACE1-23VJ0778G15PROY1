@@ -32,7 +32,7 @@ Keypad pad = Keypad(makeKeymap(teclas), rowPins, colPins, 4, 3);
 byte userCounter = 0;
 struct User {
     String name;
-    int phoneNumber;
+    String phoneNumber;
     String password;    
 };
 
@@ -106,11 +106,47 @@ void Menu(){//-------------------------------------------- Menu-----------------
 }
 
 void registro() {
+<<<<<<< HEAD
   String nombreUsuario = escribirEnPantalla(" Registro", "Nombre: ");
   if (getName(nombreUsuario) && nombreUsuario != "") { registro(); }
   String passwordUsuario = escribirEnPantalla(" Registro", "Nombre: ");
   if (passwordUsuario == "") { registro(); }
 
+=======
+  String nombreUsuario = escribirEnPantalla("Menu registro", "Nombre:");
+  if (nombreUsuario != "" && getName(nombreUsuario)) { registro(); }
+  String passwordUsuario = escribirEnPantalla("Menu registro", "Password:");
+  if (passwordUsuario == "") { registro(); }
+  String numeroUsuario = escribirEnPantalla("Menu registro", "Numero:");
+  if (numeroUsuario == "") { registro(); }
+  User newUser;
+  newUser.name = nombreUsuario;
+  newUser.password = cifrarXOR(passwordUsuario, passwordUsuario);
+  newUser.phoneNumber = numeroUsuario;
+  setUser(newUser);
+  imprimirEnPantalla("Registro", 0, 0);
+  imprimirEnPantalla("Exitoso!", 0, 1);
+  Menu();
+}
+
+void inicioSesion() {
+  // TODO: implementar inicio sesion admin
+  // por medio de la aplicacion Bluetooth.
+  String nombreUsuario = escribirEnPantalla("Inicio Sesion", "Nombre:");
+  if (nombreUsuario == "") { inicioSesion(); }
+  String passwordUsuario = escribirEnPantalla("Inicio Sesion", "Password:");
+  if (passwordUsuario == "" && isUserByNameAndPassword(nombreUsuario, passwordUsuario)) { inicioSesion(); }
+  User *logged;
+  logged = getUserByNameAndPassword(nombreUsuario, passwordUsuario);
+}
+
+void MenuUsuario() {
+  // TODO: implementar menu usuario
+}
+
+void MenuAdmin() {
+  // TODO: implementar menu admin
+>>>>>>> 811ab62ece803d17fdc34dbbfe64e87c846ed231
 }
 
 char getTeclado() {
@@ -205,6 +241,30 @@ User* getUser(String name) {
   return nullptr;
 }
 
+bool isUserByNameAndPassword(String name, String password) {
+   int value = EEPROM.read(0);
+  User temp;
+  for (int i = 0; i < value; i++) {
+    EEPROM.get(sizeof(int)+ sizeof(User)*i, temp);
+    if (temp.name == name && password == descifrarXOR(temp.name, password)) {
+      return true;
+    }
+  }
+  return false;
+}
+
+User* getUserByNameAndPassword(String name, String password) {
+   int value = EEPROM.read(0);
+  User temp;
+  for (int i = 0; i < value; i++) {
+    EEPROM.get(sizeof(int)+ sizeof(User)*i, temp);
+    if (temp.name == name && password == descifrarXOR(temp.name, password)) {
+      return &temp;
+    }
+  }
+  return nullptr;
+}
+
 void setUser(User newUser) {
   int value = EEPROM.read(0);
   value++;
@@ -238,6 +298,7 @@ String descifrarXOR(String mensajeCifrado, String clave) {
   return mensajeDescifrado;
 }
 
+<<<<<<< HEAD
 void MostrarDigito(String numDecenas) {
 
   if (numDecenas == "0") {
@@ -291,3 +352,5 @@ void MostrarDigito(String numDecenas) {
   }
 
 }//contador con dos digitos_________________________________
+=======
+>>>>>>> 811ab62ece803d17fdc34dbbfe64e87c846ed231
