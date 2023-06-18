@@ -14,7 +14,7 @@
 LiquidCrystal lcd(2, 3, 4, 5, 6, 7);
 LedControl matriz_driver = LedControl(DIN, CLOCK, LOAD, 1);
 
-char mensaje[] = "Diego - Brian 201807253 - Hugo 202004807 - Victor - Henry";
+char mensaje[] = "Diego 201908327 - Brian - Hugo 202004807 - Victor - Henry";
 const int PIN_BUTTON = 2;  // Pin de seleccion
 int menuIndex = 0; //estado del menu
 const int cambio = 10; //boton para cambiar en el menu inicio
@@ -221,5 +221,3 @@ void setUser(User newUser) {
   value++;
   EEPROM.put(sizeof(int)+ value*sizeof(User), newUser);
 }
-
-
