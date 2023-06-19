@@ -24,13 +24,9 @@ int opcionAdministrador = -1;
 
 // int para opciones en menus
 int opcion = 0;
-const int numeroDispositivos = 1; // Número de controladores MAX7219 conectados
-const int pinDIN = 11; // Pin de datos (MOSI)
-const int pinCLK = 13; // Pin de reloj (SCK)
-const int pinCS = 10; // Pin de selección del dispositivo (SS)
 
 
-LedControl matriz_driver = LedControl(pinDIN, pinCLK, pinCS, numeroDispositivos);
+LedControl matriz_driver = LedControl(DIN,CLOCK,LOAD,1);
 // string para 
 
 char teclas[4][3] = { 
@@ -149,47 +145,6 @@ void Menu(){//-------------------------------------------- Menu-----------------
       }
     }
   }
-
-  /*
-  if(primero){
-    lcd.print("  Menu Principal");
-    lcd.setCursor(0, 2);
-    lcd.print(">> Inicio de sesion");
-    lcd.setCursor(0, 3);
-    lcd.print("   Registro");
-    primero=false;
-  }
-  
-  if (digitalRead(cambio) == LOW) {
-    delay(100);
-    menuIndex = (menuIndex + 1) % 2; // Cambiar de opción de menú
-
-    lcd.clear();
-    lcd.setCursor(0, 0);
-    lcd.print("  Menu Principal");
-    Serial.println("Base");
-  if (menuIndex == 0){
-    lcd.clear();
-    lcd.setCursor(0, 0);
-    lcd.print("  Menu Principal");
-    lcd.setCursor(0, 2);
-    lcd.print(">> Inicio de sesion");
-    lcd.setCursor(0, 3);
-    lcd.println("   Registro");
-
-    Serial.print("Uno");
-  } else { 
-    lcd.clear();
-    lcd.setCursor(0, 0);
-    lcd.print("  Menu Principal");
-    lcd.setCursor(0, 2);
-    lcd.print("   Inicio de sesion");
-    lcd.setCursor(0, 3);
-    lcd.print(">> Registro");
-    Serial.println("Dos");
-   }
-  }
-  */
 }
 
 void registro() {
@@ -222,8 +177,6 @@ void inicioSesion() {
 }
 
 void MenuUsuario() {
-  // TODO: implementar menu usuario
-  // por medio de la aplicacion Bluetooth.
   lcd.clear();
   LOOP {
     delay(1);
