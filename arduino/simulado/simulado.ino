@@ -16,7 +16,7 @@
 
 LiquidCrystal lcd(2, 3, 4, 5, 6, 7);
 
-char mensaje[] = "Diego 201908327 - Brian 201807253 - Hugo 202004807 - Victor - Henry";
+char mensaje[] = "Diego 201908327 - Brian 201807253 - Hugo 202004807 - Victor 201403946 - Henry 201906562";
 bool primero= true;
 bool opcionesMostradas = false;
 int opcionAdministrador = -1;
