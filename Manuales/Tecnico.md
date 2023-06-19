@@ -104,4 +104,35 @@ El bloque "loop" en Arduino es una estructura de control que se utiliza para rep
 ![imagen de la funcion Setup()](../Imagenes/Setup.jpg)
 Reiniciara el estado del juego con los valores predeterminados al iniciar un nuevo juego
 
+### registro()
+![imagen de la funcion registro()](../Imagenes/registro.png)
+Se registrara un usuario nuevo
+
+### inicioSesion()
+![imagen de la funcion inicioSesion()](../Imagenes/inicioSesion.png)
+Se iniciara sesion con un usuario
+
+### getName()
+![imagen de la funcion getName()](../Imagenes/getName.png)
+Se verificara por medio del nombre si el usuario existe
+
+### getUser()
+![imagen de la funcion getUser()](../Imagenes/getUser.png)
+Se obtendra el usuario por medio del nombre
+
+### isUserByNameAndPassword()
+![imagen de la funcion isUserByNameAndPassword()](../Imagenes/isUserByNameAndPassword.png)
+Se obtendra el usuario por medio del nombre
+
+### isUserByNameAndPassword()
+![imagen de la funcion isUserByNameAndPassword()](../Imagenes/isUserByNameAndPassword.png)
+Se verificara si exsite el usuario por medio del nombre y el password
+
+### getUserByNameAndPassword()
+![imagen de la funcion getUserByNameAndPassword()](../Imagenes/getUserByNameAndPassword.png)
+Se obtendra el usuario por medio del nombre y el password
+
+### setUser()
+![imagen de la funcion setUser()](../Imagenes/setUser.png)
+Se guardara un nuevo usuario en la eeprom
 <!-- Agregar las funciones que no esten y que ustedes hayan hecho -->
