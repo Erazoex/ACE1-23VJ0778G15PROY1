@@ -4,6 +4,8 @@
 #include <EEPROM.h>
 #include <Keypad.h>
 
+#define LINEA_VACIA "                "
+#define OFFSET_USUARIOS 16
 #define ACEPTAR 8
 #define CANCELAR 9
 #define BORRAR 10
@@ -15,18 +17,20 @@
 LiquidCrystal lcd(2, 3, 4, 5, 6, 7);
 
 char mensaje[] = "Diego 201908327 - Brian 201807253 - Hugo 202004807 - Victor - Henry";
-const int PIN_BUTTON = 2;  // Pin de seleccion
-int menuIndex = 0; //estado del menu
-const int cambio = 10; //boton para cambiar en el menu inicio
 bool primero= true;
 bool opcionesMostradas = false;
 int opcionAdministrador = -1;
 
 // int para opciones en menus
 int opcion = 0;
+const int numeroDispositivos = 1; // Número de controladores MAX7219 conectados
+const int pinDIN = 11; // Pin de datos (MOSI)
+const int pinCLK = 13; // Pin de reloj (SCK)
+const int pinCS = 10; // Pin de selección del dispositivo (SS)
 
+int TipoLogin=""; //1) Admin, 2) USUARIO
 
-LedControl matriz_driver = LedControl(DIN,CLOCK,LOAD,1);
+LedControl matriz_driver = LedControl(pinDIN, pinCLK, pinCS, numeroDispositivos);
 // string para 
 
 char teclas[4][3] = { 
@@ -36,7 +40,7 @@ char teclas[4][3] = {
   {'*','0','#'}
 };
 
-byte rowPins[4] = { 53, 52, 51, 50 };
+byte rowPins[4] = { 25, 26, 27, 28 };
 byte colPins[4] = { 22, 23, 24 };
 Keypad pad = Keypad(makeKeymap(teclas), rowPins, colPins, 4, 3);
 
@@ -46,6 +50,15 @@ struct User {
     String phoneNumber;
     String password;    
 };
+struct usuario {//corregir valores
+    char nombre[11]; //tamaño de 8-9   [A-Z0-9]+
+    char contra[11];//8   [0-9]+
+    char numero[9] ;// 8-12  [A-Z0-9*#$!]+
+};
+void borrarEEPROM() {
+    for (int i = 0; i < EEPROM.length(); i++)
+        EEPROM.write(i, 0);
+}
 
 int logCounter = 1;
 struct Log {
@@ -65,25 +78,25 @@ void setup() {//--------------------------------------------- setup ------------
   matriz_driver.setIntensity(0, 7); // Ajustar la intensidad de brillo (0-15)
   matriz_driver.clearDisplay(0); // Limpiar la matriz de LEDs
 
-  pinMode(cambio, INPUT_PULLUP);
-
   for (int j=25; j<=28; j++){
     pinMode(j, INPUT);
   }
   for (int j=22; j<=24; j++){
     pinMode(j, OUTPUT);
   }
+  //borrarEEPROM();
 
 }
 
 void loop() {//----------------------------------------------- loop --------------------------------------
   
-  if(primero){//para que solo se muestre al inicio del programa unicamente
+  if(/*primero*/false){//para que solo se muestre al inicio del programa unicamente
     MensajeInicio();
     lcd.clear();
     primero = false;
   }
   Menu();
+  
 }
 
 void MensajeInicio() {
@@ -105,6 +118,51 @@ void MensajeInicio() {
     }
     delay(20);  // Pausa de 20 milisegundos
   }
+}
+
+enum estados {//----------------------estados del munu de usuario
+    MENU,
+    REGISTRO,
+    ESPERANDO,
+    LOGIN,
+    LOGS
+} siguiente_estado, estado_actual = MENU;
+
+byte opcion_menu = 0;
+char nombre_temp[11];
+char contra_temp[11];
+char numero_temp[9] ;
+int indiceNombre = 0;
+int indiceContra = 0;
+int indiceComple = 0;
+int direccionEEPROM = 1;
+
+boolean entradaAceptada() {
+  LOOP {
+  if (digitalRead(8)) {//aceptar
+    delay(210);
+    return true;
+    }
+  if (digitalRead(9)) {//cancelar
+    delay(210);
+    return false;
+  }
+ }
+}
+void limpiarBuffer() {
+    int t0 = millis();
+    int t1 = millis();
+    LOOP {
+        t1 = millis();
+        while(Serial.available()) {
+        Serial.read();
+        }
+        if ((t1 - t0 >= 100) && !Serial.available()) break;
+    }
+}
+void imprimirAsteriscos(char* cadena) {
+    for (; *cadena; cadena++)
+        lcd.write('*');
 }
 
 void Menu(){//-------------------------------------------- Menu-----------------------------------
@@ -145,6 +203,7 @@ void Menu(){//-------------------------------------------- Menu-----------------
       }
     }
   }
+
 }
 
 void registro() {
@@ -177,6 +236,385 @@ void inicioSesion() {
 }
 
 void MenuUsuario() {
+  bool salir=true;
+  // TODO: implementar menu usuario
+  // por medio de la aplicacion Bluetooth.
+  while(salir){
+    switch (estado_actual) {
+      case ESPERANDO: {//-------------------------------esperando----------------------------
+        limpiarBuffer();
+        lcd.clear();
+        lcd.print(" Esperando  una ");
+        lcd.setCursor(0, 1);
+        lcd.print("   conexion...  ");
+        char caracter;
+        bool esperando=true;
+        while(esperando){
+          if(Serial.available()){
+            caracter = Serial.read();       
+            if(caracter == 'c'){
+              lcd.clear();
+              lcd.print("Conectado");
+              delay(100);
+              estado_actual = siguiente_estado;
+              esperando=false;
+            }
+          }
+        }
+         break;
+       }//fin esperando
+
+        
+        case MENU: {//----------------------------------------menu-----------------------------
+            lcd.clear();
+            lcd.setCursor(0, 0);
+            lcd.print("  Menu Principal");            
+            lcd.setCursor(0, 2);
+            lcd.print("1. LOGIN");
+            lcd.setCursor(0, 3);
+            lcd.print("2. REGISTRO");
+            lcd.setCursor(0, (opcion_menu));
+            lcd.print(">>");  
+            delay(10);
+            LOOP {
+                bool salir = false;
+                char tecla = pad.getKey();
+                delay(50);
+                if (tecla) {
+                  char teclax=tecla;
+                  
+                  switch (teclax){
+                    case '1':
+                      opcion_menu=1;  
+                      lcd.setCursor(0, 0);
+                      lcd.print("  Menu Principal");            
+                      lcd.setCursor(0, 2);
+                      lcd.print("1. LOGIN");
+                      lcd.setCursor(0, 3);
+                      lcd.print("2. REGISTRO");
+                      lcd.setCursor(0, (opcion_menu+1));
+                      lcd.print(">>");
+                      estado_actual = ESPERANDO;
+                      siguiente_estado = LOGIN;
+                      salir=true;
+                    break;
+                    case '2':
+                      opcion_menu=2;                 
+                      lcd.setCursor(0, 0);
+                      lcd.print("  Menu Principal");            
+                      lcd.setCursor(0, 2);
+                      lcd.print("1. LOGIN");
+                      lcd.setCursor(0, 3);
+                      lcd.print("2. REGISTRO");
+                      lcd.setCursor(0, (opcion_menu+1));
+                      lcd.print(">>");
+                      estado_actual = ESPERANDO;
+                      siguiente_estado = REGISTRO;
+                      salir=true;                      
+                      break;
+                      
+                    default:
+                      salir=false;
+                    break;
+                  }                  
+                  
+                }//fin if(tecla)
+             
+                if (salir){ break;}
+            }
+            break;
+        }
+        case LOGIN: {//-----------------------------------------------case login----
+            memset(nombre_temp, 0, 11);    
+            memset(contra_temp, 0, 11);    
+            memset(numero_temp, 0,  9);    
+            struct usuario nuevo_usuario;
+      LOOP {
+          limpiarBuffer();
+          //enviarConfirmar("usuario");
+              Serial.print("usuario");
+              memset(nombre_temp, 0, 11);//destino, valor, tamaño    
+                lcd.clear();
+                lcd.print("L O G I N");
+                lcd.setCursor(0, 1);
+                lcd.print(" - NOMBRE:");
+                lcd.setCursor(0, 2);
+                Serial.flush();
+                delay(5);
+                // OBTENER CADENA DE APLICACIÓN -- Nombre
+                bool seEnvioAlgo = false;
+                int indiceNombre = 0;
+                long int t0 = millis();
+                long int t1 = millis();
+          limpiarBuffer();
+                LOOP {
+                    // SI YA SE ENVIO ALGO DESDE LA APLICACION
+                    while (Serial.available()) {
+                        seEnvioAlgo = true;
+                    //   RECIBIRLO
+                        nombre_temp[indiceNombre++] = Serial.read();
+                    }
+                    // CONTROLAR CUANTO HA PASADO DESDE QUE COME...
+                    if (seEnvioAlgo) {
+                        t1 = millis();
+                        if (t1 - t0 >= 50) break;
+                    } else {
+                        t0 = millis();
+                        t1 = millis();
+                    }
+                }
+                lcd.print(nombre_temp);
+                lcd.setCursor(0, 3);
+                lcd.print("Correcto?       ");
+                delay(10);
+              if (entradaAceptada()){ 
+              lcd.setCursor(0, 2);
+              lcd.print(LINEA_VACIA);
+              lcd.setCursor(0, 3);
+              lcd.print(LINEA_VACIA);
+              break;
+              }
+            }
+      LOOP {
+          limpiarBuffer();
+          //enviarConfirmar("contrasena");
+          Serial.print("contrasena");
+              memset(contra_temp, 0, 11);    
+                lcd.clear();
+                lcd.print("L O G I N");
+                lcd.setCursor(0, 1);
+                lcd.print(" - Contras:");
+                lcd.setCursor(0, 2);
+                delay(5);
+                // OBTENER CADENA DE APLICACIÓN -- Nombre
+                bool seEnvioAlgo = false;
+                int indiceContra = 0;
+                long int t0 = millis();
+                long int t1 = millis();
+          limpiarBuffer();
+                LOOP {
+                    // SI YA SE ENVIO ALGO DESDE LA APLICACION
+                    while (Serial.available()) {
+                        seEnvioAlgo = true;
+                    //   RECIBIRLO
+                        contra_temp[indiceContra++] = Serial.read();
+                    }
+                    // CONTROLAR CUANTO HA PASADO DESDE QUE COME...
+                    if (seEnvioAlgo) {
+                        t1 = millis();
+                        if (t1 - t0 >= 50) break;
+                    } else {
+                        t0 = millis();
+                        t1 = millis();
+                    }
+                }
+    imprimirAsteriscos(contra_temp);
+                lcd.setCursor(0, 3);
+                lcd.print("Correcto?       ");
+                delay(10);
+              if (entradaAceptada()){ 
+              lcd.setCursor(0, 2);
+              lcd.print(LINEA_VACIA);
+              lcd.setCursor(0, 3);
+              lcd.print(LINEA_VACIA);
+              break;
+              }
+            }
+      //enviarConfirmar("NADA");
+      // LEER EEPROM
+      byte usuarios = 0;
+      EEPROM.get(0, usuarios);
+      int siguiente_direccion = OFFSET_USUARIOS;
+      bool encontrado = false;
+      for (int i = 0; i < usuarios; i++) {
+          struct usuario usuario_existente;
+    EEPROM.get(siguiente_direccion, usuario_existente);
+    //contra_temp=cifrarXOR(contra_temp,contra_temp);
+    if (strcmp(nombre_temp, usuario_existente.nombre) == 0 && \
+        strcmp(contra_temp, usuario_existente.contra) == 0) {
+        encontrado = true;
+    }
+          siguiente_direccion += sizeof(struct usuario);
+      }
+      lcd.clear();
+      if (encontrado) {
+        lcd.print("ENCONTRADO");
+        salir=false; //--------------------------------------------ahora entramos a las opciones del menu user
+      }
+      else {
+        lcd.print("NO ENCONTRADO");
+        estado_actual=MENU;
+      }
+      siguiente_estado = MENU;
+      delay(100);
+            break;
+        }
+        case REGISTRO: {//--------------------------------------case registro-------------------------------
+          lcd.clear();
+          lcd.print("R E G I S T R O");
+            memset(nombre_temp, 0, 11);    
+            memset(contra_temp, 0, 11);    
+            memset(numero_temp, 0,  9);    
+            struct usuario nuevo_usuario;                  
+            delay(50);
+          LOOP {// es necesario el bucle por si no se cancela el valor enviado
+              lcd.clear();
+              lcd.print("R E G I S T R O");
+              lcd.setCursor(0, 1);
+              lcd.print(" - NOMBRE:");
+              lcd.setCursor(0, 2);
+              delay(1);
+              limpiarBuffer();
+              //enviarConfirmar("usuario");
+              Serial.print("usuario");   
+              Serial.flush();    
+              memset(nombre_temp, 0, 11);    
+              
+              // OBTENER CADENA DE APLICACIÓN -- Nombre
+              bool seEnvioAlgo = false;
+              int indiceNombre = 0;
+              long int t0 = millis();
+              long int t1 = millis();
+              limpiarBuffer();
+              LOOP {
+                  // SI YA SE ENVIO ALGO DESDE LA APLICACION
+                  while (Serial.available()) {
+                      seEnvioAlgo = true;
+                  //   RECIBIRLO
+                      nombre_temp[indiceNombre++] = Serial.read();
+                  }
+                  // CONTROLAR CUANTO HA PASADO DESDE QUE COME...
+                  if (seEnvioAlgo) {
+                      t1 = millis();
+                      if (t1 - t0 >= 50) break;
+                  } else {
+                      t0 = millis();
+                      t1 = millis();
+                  }
+                }
+              lcd.print(nombre_temp);
+              lcd.setCursor(0, 3);
+              lcd.print("Correcto?       ");
+              delay(10);
+              if (entradaAceptada()){ 
+              lcd.setCursor(0, 2);
+              lcd.print(LINEA_VACIA);
+              lcd.setCursor(0, 3);
+              lcd.print(LINEA_VACIA);
+              break;
+              }
+             }//---------------------
+      LOOP {
+          //limpiarBuffer();
+          //enviarConfirmar("telefono");
+              memset(numero_temp, 0, 9);//dest, val, long
+                lcd.clear();
+                lcd.print("R E G I S T R O");
+                lcd.setCursor(0, 1);
+                lcd.print(" - Celular:");
+                lcd.setCursor(0, 2);
+                // OBTENER CADENA DE APLICACIÓN -- Nombre
+                bool seEnvioAlgo = false;
+                int indiceNumero = 0;
+                long int t0 = millis();
+                long int t1 = millis();
+          limpiarBuffer();
+                LOOP {
+                    // SI YA SE ENVIO ALGO DESDE LA APLICACION
+                    while (Serial.available()) {
+                        seEnvioAlgo = true;
+                    //   RECIBIRLO
+                        numero_temp[indiceNumero++] = Serial.read();
+                    }
+                    // CONTROLAR CUANTO HA PASADO DESDE QUE COME...
+                    if (seEnvioAlgo) {
+                        t1 = millis();
+                        if (t1 - t0 >= 50) break;
+                    } else {
+                        t0 = millis();
+                        t1 = millis();
+                    }
+                }
+                lcd.print(numero_temp);
+                lcd.setCursor(0, 3);
+                lcd.print("Correcto?       ");
+                delay(200);
+              if (entradaAceptada()) {
+                lcd.setCursor(0, 2);
+                lcd.print(LINEA_VACIA);
+                lcd.setCursor(0, 3);
+                lcd.print(LINEA_VACIA);
+                break;
+                }
+    
+            }//---------------------------------------
+      LOOP {
+          //limpiarBuffer();
+          //enviarConfirmar("contrasena");
+              memset(contra_temp, 0, 11);    
+                lcd.clear();
+                lcd.print("R E G I S T R O");
+                lcd.setCursor(0, 1);
+                lcd.print(" - Contras:");
+                lcd.setCursor(0, 2);
+                // OBTENER CADENA DE APLICACIÓN -- Nombre
+                bool seEnvioAlgo = false;
+                int indiceContra = 0;
+                long int t0 = millis();
+                long int t1 = millis();
+          limpiarBuffer();
+                LOOP {
+                    // SI YA SE ENVIO ALGO DESDE LA APLICACION
+                    while (Serial.available()) {
+                        seEnvioAlgo = true;
+                    //   RECIBIRLO
+                        contra_temp[indiceContra++] = Serial.read();
+                    }
+                    // CONTROLAR CUANTO HA PASADO DESDE QUE COME...
+                    if (seEnvioAlgo) {
+                        t1 = millis();
+                        if (t1 - t0 >= 50) break;
+                    } else {
+                        t0 = millis();
+                        t1 = millis();
+                    }
+                }
+    imprimirAsteriscos(contra_temp);
+                lcd.setCursor(0, 3);
+                lcd.print("Correcto?       ");
+                delay(200);
+              if (entradaAceptada()) {
+                lcd.setCursor(0, 2);
+                lcd.print(LINEA_VACIA);
+                lcd.setCursor(0, 3);
+                lcd.print(LINEA_VACIA);
+                break;
+                }
+    
+            }//************
+      //enviarConfirmar("NADA");
+      //contra_temp=cifrarXOR(contra_temp, contra_temp);
+      memcpy(nuevo_usuario.nombre, nombre_temp, 11);
+      memcpy(nuevo_usuario.numero, numero_temp, 9);
+      memcpy(nuevo_usuario.contra, contra_temp, 11);
+      // LEER EEPROM
+      byte usuarios = 0;
+      EEPROM.get(0, usuarios);
+      int siguiente_direccion = OFFSET_USUARIOS;
+      for (int i = 0; i < usuarios; i++) {
+          siguiente_direccion += sizeof(struct usuario);
+      }
+      EEPROM.put(siguiente_direccion, nuevo_usuario);
+      usuarios++;
+      EEPROM.put(0, usuarios);
+      estado_actual = MENU;
+      lcd.clear();
+       break;                         
+        }                                 
+        
+    }
+    delay(10);
+  }//**********************************************segunda parte menu admin*******************************
   lcd.clear();
   LOOP {
     delay(1);
@@ -388,6 +826,28 @@ String cifrarXOR(String mensaje, String clave) {
   return mensajeCifrado;
 }
 
+String cifrarXOR(char mensaje[], char clave[], int longitud) {
+  // Cifrado XOR byte a byte
+  String mensajeCifrado = "";
+  for (int i = 0; i < longitud; i++) {
+    char caracterCifrado = mensaje[i] ^ clave[i];
+    mensajeCifrado += caracterCifrado;
+  }
+  
+  return mensajeCifrado;
+}
+String cifrarXOR2(char mensaje[], char clave[], int longitud) {
+  // Cifrado XOR byte a byte
+  String mensajeCifrado = "";
+  for (int i = 0; i < longitud; i++) {
+    char caracterCifrado = mensaje[i] ^ clave[i];
+    mensajeCifrado += caracterCifrado;
+  }
+  
+  return mensajeCifrado;
+}
+
+
 String descifrarXOR(String mensajeCifrado, String clave) {
   // Descifrado XOR byte a byte
   String mensajeDescifrado = "";
@@ -455,4 +915,3 @@ void MostrarDigito(char numDecenas) {
   delay(50);
 
 }//contador con dos digitos_________________________________
-
