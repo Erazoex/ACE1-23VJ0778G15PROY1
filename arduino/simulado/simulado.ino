@@ -208,7 +208,7 @@ void Menu(){//-------------------------------------------- Menu-----------------
 
 void registro() {
   String nombreUsuario = escribirEnPantalla("Menu registro", "Nombre:");
-  if (nombreUsuario != "" && isUserByName(nombreUsuario)) { registro(); }
+  if (nombreUsuario != "" && getName(nombreUsuario)) { registro(); }
   String passwordUsuario = escribirEnPantalla("Menu registro", "Password:");
   if (passwordUsuario == "") { registro(); }
   String numeroUsuario = escribirEnPantalla("Menu registro", "Numero:");
@@ -756,7 +756,7 @@ String escribirEnPantalla(String textoPrincipal, String textoSecundario) {
 }
 
 
-bool isUserByName(String name) {
+bool getName(String name) {
   int value = EEPROM.read(0);
   User temp;
   for (int i = 0; i < value; i++) {
