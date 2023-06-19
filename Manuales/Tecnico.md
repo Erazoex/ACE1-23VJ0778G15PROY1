@@ -69,11 +69,11 @@ El control se compone por:
 Este bloque contiene todas las variables, definiciones y constantes requeridas para el control de las matrices led, botones, potenciometros.. se encuentra comentado por bloque segun se ocupa.
 
 ### Bloque SETUP
-![imagen de funcion setup()](./Imagenes/Setup.png)
+![imagen de funcion setup()](../Imagenes/Setup.png)
 Este bloque se encarga de definir el modo de los pines e inicializacion de objetos.
 
 ### Bloque LOOP
-![imagen de funcion loop()](./Imagenes/Loop.png)
+![imagen de funcion loop()](../Imagenes/Loop.png)
 El bloque "loop" en Arduino es una estructura de control que se utiliza para repetir una sección de código de forma continua mientras la placa Arduino esté alimentada y funcionando.
 
 
@@ -81,27 +81,27 @@ El bloque "loop" en Arduino es una estructura de control que se utiliza para rep
 
 
 ### Menu()
-![imagen de la funcion Menu()](./Imagenes/Menu.png)
+![imagen de la funcion Menu()](../Imagenes/Menu.png)
 <!-- agregar una breve descripcion de lo que hacen -->
 
 ### Cifrado()
-![imagen de la funcion Cifrado()](./Imagenes/Cifrado.png)
+![imagen de la funcion Cifrado()](../Imagenes/Cifrado.png)
 <!-- agregar una breve descripcion de lo que hacen -->
 
 ### EscribirPantalla()
-![imagen de la funcion EscribirPanta()](./Imagenes/EscribirPanta.png)
+![imagen de la funcion EscribirPanta()](../Imagenes/EscribirPanta.png)
 <!-- agregar una breve descripcion de lo que hacen -->
 
 ### MenuAdmin()
-![imagen de la funcion MenuAdmin()](./Imagenes/MenuAdmin.png)
+![imagen de la funcion MenuAdmin()](../Imagenes/MenuAdmin.png)
 <!-- agregar una breve descripcion de lo que hacen -->
 
 ### MenuUsuario()
-![imagen de la funcion MenuUSu()](./Imagenes/MenuUSu.png)
+![imagen de la funcion MenuUSu()](../Imagenes/MenuUSu.png)
 <!-- agregar una breve descripcion de lo que hacen -->
 
 ### Setup()
-![imagen de la funcion Setup()](./imagenes/Setup.jpg)
+![imagen de la funcion Setup()](../Imagenes/Setup.jpg)
 Reiniciara el estado del juego con los valores predeterminados al iniciar un nuevo juego
 
 <!-- Agregar las funciones que no esten y que ustedes hayan hecho -->

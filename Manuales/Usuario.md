@@ -29,7 +29,7 @@ Al iniciar el juego se muestra un mensaje que muestra los siguientes datos:
  - Sección de laboratorio
 
 El mensaje se muestra de la siguiente manera:
-![](./imagenes/mensaje.jpg)
+![](../imagenes/mensaje.jpg)
 
 
 **Cambio direccion Mensaje:**
@@ -38,15 +38,15 @@ La dirección inicial del mensaje será de derecha a izquierda.
 El boton de dirección deberá controlar la dirección del mensaje.
 
 Y para realizar estos movimientos se utiliza el siguiente boton:
- ![](./imagenes/boton_direccion.jpg)
+ ![](../imagenes/boton_direccion.jpg)
 
 **Potenciometros:**
 Los potenciometro se utiliza para poder hacer cambios en la velocidad en la que se recorre el mensaje y tambien se utiliza para poder aumentar o disminuir las vidas del jugador. 
-![](./imagenes/potenciometros.jpg)
+![](../imagenes/potenciometros.jpg)
  **Como iniciar el juego:**
  Para poder iniciar el juego se debe presionar el boton IZQUIERDA durante el menu principal y empezará el juego. 
-![](./imagenes/menuConfiguracion.jpg)
-![](./imagenes/boton_izquierdo.jpg)
+![](../imagenes/menuConfiguracion.jpg)
+![](../imagenes/boton_izquierdo.jpg)
 
 **Como jugar:**
 
